@@ -1,433 +1,156 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Declaração de Residência</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="https://img.icons8.com/?size=100&id=t5GRNS5yIsHP&format=png&color=000000">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Declaração de Residência</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
   <style>
     body {
-      font-family: 'Roboto', Arial, sans-serif;
-      margin: 20px;
-      background-color: #f5f5f5;
-      color: #333;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
     }
 
     .container {
+      background: white;
       max-width: 800px;
-      margin: 0 auto;
-      background-color: white;
-      padding: 30px;
+      margin: auto;
+      padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
-      color: #2c3e50;
       text-align: center;
-      margin-bottom: 30px;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: #2c3e50;
+      margin-top: 10px;
+      font-weight: bold;
     }
 
-    input, textarea, select {
+    input,
+    textarea {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 8px;
+      margin-top: 5px;
       box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: #3498db;
-      outline: none;
-      box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
     }
 
     button {
-      background-color: #3498db;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-right: 10px;
-      margin-top: 10px;
-      font-size: 16px;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #2980b9;
-    }
-
-    .button-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
       margin-top: 20px;
-    }
-
-    .declaracao {
-      border: 1px solid #ddd;
-      padding: 30px;
-      margin-top: 30px;
-      background-color: white;
-      line-height: 1.6;
-      font-family: 'Times New Roman', serif;
-      white-space: pre-line;
-    }
-
-    .assinatura {
-      margin-top: 50px;
-      text-align: center;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .form-section {
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .form-section-title {
-      font-size: 18px;
-      color: #3498db;
-      margin-bottom: 15px;
-    }
-
-    .info-text {
-      font-size: 14px;
-      color: #7f8c8d;
-      margin-bottom: 15px;
-    }
-
-    .required:after {
-      content: " *";
-      color: #e74c3c;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
     }
   </style>
+</head>
+<body>
   <div class="container">
     <h1>Declaração de Residência</h1>
-    <div id="tipoUsuario" class="form-section">
-      <p class="info-text">Selecione o tipo de declarante:</p>
-      <div class="button-group">
-        <button type="button" onclick="mostrarFormulario('proprietario')">Proprietário</button>
-        <button type="button" onclick="mostrarFormulario('inquilino')">Inquilino</button>
-        <button type="button" onclick="mostrarFormulario('responsavel')">Responsável Legal</button>
-      </div>
-    </div>
+    <form id="residenceForm">
+      <label>Nome Completo:</label>
+      <input type="text" id="nome" oninput="capitalizeWords(this)" required />
 
-    <form id="residenciaForm" class="hidden">
-      <div class="form-section">
-        <h3 class="form-section-title">Dados Pessoais</h3>
-        <label for="nome" class="required">Nome Completo:</label>
-        <input type="text" id="nome" name="nome" required placeholder="Digite seu nome completo">
+      <label>Nacionalidade:</label>
+      <input type="text" id="nacionalidade" required />
 
-        <label for="cpf" class="required">CPF:</label>
-        <input type="text" id="cpf" name="cpf" required oninput="formatarCPF(this)" maxlength="14" placeholder="000.000.000-00">
+      <label>CPF:</label>
+      <input type="text" id="cpf" required />
 
-        <label for="rg">RG:</label>
-        <input type="text" id="rg" name="rg" placeholder="Digite seu RG">
+      <label>RG:</label>
+      <input type="text" id="rg" required />
 
-        <label for="telefone" class="required">Telefone:</label>
-        <input type="tel" id="telefone" name="telefone" required oninput="formatarTelefone(this)" maxlength="15" placeholder="(00) 00000-0000">
+      <label>Órgão Expedidor:</label>
+      <input type="text" id="orgao" required />
 
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" placeholder="seu@email.com">
-      </div>
+      <label>Telefone:</label>
+      <input type="text" id="telefone" required />
 
-      <div class="form-section">
-        <h3 class="form-section-title">Endereço</h3>
-        <label for="endereco" class="required">Endereço Completo:</label>
-        <textarea id="endereco" name="endereco" required rows="3" placeholder="Rua, número, complemento, bairro, cidade/estado, CEP"></textarea>
+      <label>Endereço Completo:</label>
+      <textarea id="endereco" required></textarea>
 
-        <label for="tempoResidencia">Tempo de Residência:</label>
-        <select id="tempoResidencia" name="tempoResidencia">
-          <option value="">Selecione...</option>
-          <option value="menos de 6 meses">Menos de 6 meses</option>
-          <option value="6 meses a 1 ano">6 meses a 1 ano</option>
-          <option value="1 a 3 anos">1 a 3 anos</option>
-          <option value="3 a 5 anos">3 a 5 anos</option>
-          <option value="mais de 5 anos">Mais de 5 anos</option>
-        </select>
-      </div>
+      <label>Local:</label>
+      <input type="text" id="local" required />
 
-      <div id="dadosProprietario" class="hidden form-section">
-        <h3 class="form-section-title">Dados do Proprietário</h3>
-        <label for="nomeProprietario">Nome do Proprietário:</label>
-        <input type="text" id="nomeProprietario" name="nomeProprietario" placeholder="Nome completo do proprietário">
+      <label>Data:</label>
+      <input type="date" id="data" required />
 
-        <label for="cpfProprietario">CPF do Proprietário:</label>
-        <input type="text" id="cpfProprietario" name="cpfProprietario" oninput="formatarCPF(this)" maxlength="14" placeholder="000.000.000-00">
-
-        <label for="moradorDesde">Morador desde:</label>
-        <input type="text" id="moradorDesde" name="moradorDesde" oninput="formatarData(this)" placeholder="dd/mm/aaaa">
-      </div>
-
-      <div id="dadosResponsavel" class="hidden form-section">
-        <h3 class="form-section-title">Dados do Responsável Legal</h3>
-        <label for="nomeResponsavel">Nome do Responsável:</label>
-        <input type="text" id="nomeResponsavel" name="nomeResponsavel" placeholder="Nome completo do responsável">
-
-        <label for="cpfResponsavel">CPF do Responsável:</label>
-        <input type="text" id="cpfResponsavel" name="cpfResponsavel" oninput="formatarCPF(this)" maxlength="14" placeholder="000.000.000-00">
-
-        <label for="parentesco">Parentesco:</label>
-        <input type="text" id="parentesco" name="parentesco" placeholder="Ex: Pai, Mãe, Tutor">
-      </div>
-
-      <div class="form-section">
-        <h3 class="form-section-title">Finalização</h3>
-        <label for="local" class="required">Local de Emissão:</label>
-        <input type="text" id="local" name="local" required placeholder="Cidade/Estado">
-
-        <label for="data" class="required">Data:</label>
-        <input type="text" id="data" name="data" required oninput="formatarData(this)" placeholder="dd/mm/aaaa">
-
-        <label for="finalidade">Finalidade da Declaração:</label>
-        <input type="text" id="finalidade" name="finalidade" placeholder="Ex: Matrícula escolar, processo seletivo">
-      </div>
-
-      <div class="button-group">
-        <button type="button" onclick="gerarDeclaracao()">Gerar Declaração</button>
-        <button type="button" onclick="salvarDeclaracao()" style="background-color: #27ae60;">Salvar como PDF</button>
-        <button type="button" onclick="voltarAoInicio()" style="background-color: #e74c3c;">Cancelar</button>
-      </div>
+      <button type="button" onclick="gerarPDF()">Gerar PDF</button>
     </form>
-
-    <div id="declaracaoGerada" class="declaracao hidden">
-      <h2 style="text-align: center; font-family: 'Times New Roman', serif;">DECLARAÇÃO DE RESIDÊNCIA</h2>
-      <p id="textoDeclaracao" style="text-align: justify; text-indent: 50px;"></p>
-      <div class="assinatura">
-        <p>_________________________________________</p>
-        <p id="nomeAssinatura" style="margin-top: -10px;"></p>
-        <p id="cpfAssinatura" style="font-size: 12px; margin-top: -10px;"></p>
-      </div>
-      <div class="button-group" style="justify-content: center;">
-        <button type="button" onclick="imprimirDeclaracao()" style="background-color: #3498db;">Imprimir Declaração</button>
-        <button type="button" onclick="voltarAoInicio()" style="background-color: #e74c3c;">Nova Declaração</button>
-      </div>
-    </div>
   </div>
 
   <script>
-    const { jsPDF } = window.jspdf;
-    let tipoUsuarioSelecionado = '';
 
-    function mostrarFormulario(tipo) {
-      tipoUsuarioSelecionado = tipo;
-      document.getElementById('tipoUsuario').classList.add('hidden');
-      document.getElementById('residenciaForm').classList.remove('hidden');
+    new Cleave('#cpf', {
+      delimiters: ['.', '.', '-'],
+      blocks: [3, 3, 3, 2],
+      numericOnly: true
+    });
 
-      document.getElementById('dadosProprietario').classList.add('hidden');
-      document.getElementById('dadosResponsavel').classList.add('hidden');
-      
-      if (tipo === 'inquilino') {
-        document.getElementById('dadosProprietario').classList.remove('hidden');
-      } else if (tipo === 'responsavel') {
-        document.getElementById('dadosResponsavel').classList.remove('hidden');
-      }
+    new Cleave('#telefone', {
+      delimiters: [' ', '-'],
+      blocks: [2, 5, 4],
+      numericOnly: true
+    });
+
+    function capitalizeWords(input) {
+      let words = input.value.toLowerCase().split(' ');
+      input.value = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     }
 
-    function formatarCPF(input) {
-      let valor = input.value.replace(/\D/g, '');
-      if (valor.length > 11) {
-        valor = valor.substring(0, 11); 
-      }
-      valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-      valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
-      valor = valor.replace(/(\d{3})(\d{2})/, '$1-$2');
-      input.value = valor;
-    }
-
-    function formatarTelefone(input) {
-      let valor = input.value.replace(/\D/g, '');
-      if (valor.length > 11) {
-        valor = valor.substring(0, 11); 
-      }
-      valor = valor.replace(/(\d{2})(\d)/, '($1) $2');
-      valor = valor.replace(/(\d{5})(\d)/, '$1-$2');
-      input.value = valor;
-    }
-
-    function formatarData(input) {
-      let valor = input.value.replace(/\D/g, '');
-      if (valor.length > 2) {
-        valor = valor.replace(/(\d{2})(\d)/, '$1/$2');
-      }
-      if (valor.length > 5) {
-        valor = valor.replace(/(\d{2})(\d)/, '$1/$2');
-      }
-      if (valor.length > 10) {
-        valor = valor.substring(0, 10);
-      }
-      input.value = valor;
-    }
-
-    function gerarDeclaracao() {
-   
-      const camposObrigatorios = ['nome', 'cpf', 'telefone', 'endereco', 'local', 'data'];
-      let valido = true;
-      
-      camposObrigatorios.forEach(campo => {
-        const elemento = document.getElementById(campo);
-        if (!elemento.value.trim()) {
-          elemento.style.borderColor = '#e74c3c';
-          valido = false;
-        } else {
-          elemento.style.borderColor = '#ddd';
-        }
-      });
-      
-      if (!valido) {
-        alert('Por favor, preencha todos os campos obrigatórios marcados com *');
-        return;
-      }
-
-
-      const nome = document.getElementById('nome').value;
-      const cpf = document.getElementById('cpf').value;
-      const rg = document.getElementById('rg').value;
-      const telefone = document.getElementById('telefone').value;
-      const endereco = document.getElementById('endereco').value;
-      const tempoResidencia = document.getElementById('tempoResidencia').value;
-      const local = document.getElementById('local').value;
-      const data = document.getElementById('data').value;
-      const finalidade = document.getElementById('finalidade').value;
-
-   
-      let textoDeclaracao = `Declaro, para os devidos fins, que ${nome}, portador(a) do CPF nº ${cpf}${rg ? ` e RG nº ${rg}` : ''}, residente e domiciliado(a) no endereço ${endereco}${tempoResidencia ? `, onde reside há ${tempoResidencia}` : ''}, `;
-
-      if (tipoUsuarioSelecionado === 'inquilino') {
-        const nomeProprietario = document.getElementById('nomeProprietario').value;
-        const cpfProprietario = document.getElementById('cpfProprietario').value;
-        const moradorDesde = document.getElementById('moradorDesde').value;
-        
-        textoDeclaracao += `é inquilino(a) do imóvel cujo proprietário é ${nomeProprietario}${cpfProprietario ? `, CPF nº ${cpfProprietario}` : ''}${moradorDesde ? `, residente no local desde ${moradorDesde}` : ''}. `;
-      } else if (tipoUsuarioSelecionado === 'responsavel') {
-        const nomeResponsavel = document.getElementById('nomeResponsavel').value;
-        const cpfResponsavel = document.getElementById('cpfResponsavel').value;
-        const parentesco = document.getElementById('parentesco').value;
-        
-        textoDeclaracao += `é dependente de ${nomeResponsavel}${cpfResponsavel ? `, CPF nº ${cpfResponsavel}` : ''}${parentesco ? `, na qualidade de ${parentesco}` : ''}. `;
-      } else {
-        textoDeclaracao += `é proprietário(a) do referido imóvel. `;
-      }
-
-      textoDeclaracao += `Declaro ainda que as informações acima são verdadeiras e assumo total responsabilidade por elas, nos termos da Lei nº 7.115/83.\n\n`;
-      
-      if (finalidade) {
-        textoDeclaracao += `Esta declaração é fornecida para fins de ${finalidade}.\n\n`;
-      }
-      
-      textoDeclaracao += `${local}, ${data}.`;
-
-
-      document.getElementById('textoDeclaracao').textContent = textoDeclaracao;
-      document.getElementById('nomeAssinatura').textContent = nome;
-      document.getElementById('cpfAssinatura').textContent = `CPF: ${cpf}`;
-      document.getElementById('declaracaoGerada').classList.remove('hidden');
-      
-     
-      document.getElementById('declaracaoGerada').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function salvarDeclaracao() {
-     
-      if (!document.getElementById('textoDeclaracao').textContent) {
-        alert('Por favor, gere a declaração antes de salvar.');
-        return;
-      }
-
+    async function gerarPDF() {
+      const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      const margin = 20;
-      const lineHeight = 7;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const textWidth = pageWidth - 2 * margin;
-      
-  
-      doc.setFont('Times', 'normal');
-      doc.setFontSize(12);
-      
 
+      const nome = document.getElementById("nome").value;
+      const nacionalidade = document.getElementById("nacionalidade").value;
+      const cpf = document.getElementById("cpf").value;
+      const rg = document.getElementById("rg").value;
+      const orgao = document.getElementById("orgao").value;
+      const telefone = document.getElementById("telefone").value;
+      const endereco = document.getElementById("endereco").value;
+      const local = document.getElementById("local").value.toUpperCase();
+      const data = document.getElementById("data").value.split("-").reverse().join("/").toUpperCase();
+
+      const texto = `
+Eu, ${nome}, ${nacionalidade}, CPF nº ${cpf}, RG nº ${rg}, Órgão Exped. ${orgao}, telefone (${telefone}), na falta de documentos para comprovação de residência, em conformidade com o disposto na Lei 7.115, de 29 de agosto de 1983, DECLARO para os devidos fins, sob penas da Lei, ser residente e domiciliado no endereço: ${endereco}.
+
+Por ser verdade, firmo a presente declaração para que produza os efeitos legais, ciente de que a falsidade de seu conteúdo pode implicar na imputação de sanções civis, administrativas, bem como na sanção penal prevista no art. 299 do Código Penal, conforme abaixo:
+
+Art. 299 – Omitir, em documento público ou particular, declaração que nele deveria constar, ou nele inserir ou fazer inserir declaração falsa ou diversa da que devia ser escrita, com o fim de prejudicar direito, criar obrigação ou alterar a verdade sobre o fato juridicamente relevante.
+
+Pena: reclusão de 1 (um) a 5 (cinco) anos e multa, se o documento é público e reclusão de 1 (um) a 3 (três) anos, se o documento é particular.
+      `.trim();
+
+ 
+      doc.setFont("Times", "bold");
       doc.setFontSize(16);
-      doc.setFont('Times', 'bold');
-      doc.text('DECLARAÇÃO DE RESIDÊNCIA', pageWidth / 2, margin + 10, { align: 'center' });
-      doc.setFontSize(12);
-      doc.setFont('Times', 'normal');
-      
+      doc.text("DECLARAÇÃO DE RESIDÊNCIA", 105, 20, { align: "center" });
 
-      const texto = document.getElementById('textoDeclaracao').textContent;
-      const lines = doc.splitTextToSize(texto, textWidth);
-      
-      let y = margin + 30;
-      
-      lines.forEach(line => {
-        if (y > doc.internal.pageSize.getHeight() - 20) {
-          doc.addPage();
-          y = margin;
-        }
-        doc.text(line, margin, y);
-        y += lineHeight;
-      });
-      
-
-      const nome = document.getElementById('nome').value;
-      const cpf = document.getElementById('cpf').value;
-      
-      y += 20;
-      doc.line(margin + 40, y, pageWidth - margin - 40, y);
-      y += 10;
-      doc.text(nome, pageWidth / 2, y, { align: 'center' });
-      y += 5;
-      doc.setFontSize(10);
-      doc.text(`CPF: ${cpf}`, pageWidth / 2, y, { align: 'center' });
-      
-
-      doc.save(`Declaracao_Residencia_${nome.replace(/\s/g, '_')}.pdf`);
-    }
-
-    function imprimirDeclaracao() {
-      window.print();
-    }
-
-    function voltarAoInicio() {
-     
-      document.getElementById('residenciaForm').reset();
-      
-
-      const inputs = document.querySelectorAll('input, textarea, select');
-      inputs.forEach(input => {
-        input.style.borderColor = '#ddd';
-      });
-      
    
-      document.getElementById('residenciaForm').classList.add('hidden');
-      document.getElementById('dadosProprietario').classList.add('hidden');
-      document.getElementById('dadosResponsavel').classList.add('hidden');
-      document.getElementById('declaracaoGerada').classList.add('hidden');
-      
- 
-      document.getElementById('tipoUsuario').classList.remove('hidden');
-      
- 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      doc.setFont("Times", "normal");
+      doc.setFontSize(12);
+      const lines = doc.splitTextToSize(texto, 180); // maxWidth = 180mm
+      doc.text(lines, 15, 30); 
+
+
+      const yEnd = 30 + lines.length * 6;
+
+
+      doc.setFontSize(12);
+      doc.text(`${local}, ${data}`, 15, yEnd + 20);
+
+
+      doc.setFontSize(14);
+      doc.text("___________________________________", 15, yEnd + 40);
+      doc.text("ASSINATURA DO DECLARANTE", 15, yEnd + 50);
+
+      doc.save("Declaracao_Residencia.pdf");
     }
   </script>
 </body>
